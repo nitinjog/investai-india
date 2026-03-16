@@ -53,7 +53,11 @@ def _build_product(raw: dict, amount: float, duration_label: str) -> Product:
         risks=raw.get("risks", []),
         duration_suitability=raw.get("duration_suitability", ""),
         source_links=raw.get("source_links", []),
-        extra={"explanation": get_explanation(raw)},
+        extra={
+            "explanation": get_explanation(raw),
+            "price_source": raw.get("price_source", "unknown"),
+            "price_date":   raw.get("price_date", ""),
+        },
     )
 
 @router.post("/recommend", response_model=RecommendResponse)
@@ -120,6 +124,16 @@ async def recommend(req: RecommendRequest):
         # ── Build response ─────────────────────────────────────────────────
         products = [_build_product(p, req.amount, dur_label) for p in ranked]
 
+        # Determine overall data quality from price sources
+        sources   = [p.get("price_source", "unknown") for p in ranked]
+        live_set  = {"live_yfinance", "live_mfapi"}
+        has_live  = any(s in live_set for s in sources)
+        has_mock  = any(s == "mock" for s in sources)
+        data_quality = "live" if (has_live and not has_mock) else ("partial" if has_live else "mock")
+
+        price_dates = [p.get("price_date", "") for p in ranked if p.get("price_date")]
+        price_as_of = price_dates[0] if price_dates else None
+
         return RecommendResponse(
             recommendations=products,
             macro_context=macro_ctx,
@@ -128,10 +142,12 @@ async def recommend(req: RecommendRequest):
             duration_label=dur_label,
             amount=req.amount,
             data_sources=[
-                "NSE India", "AMFI India", "yfinance",
+                "NSE India", "AMFI India", "MFapi.in", "yfinance",
                 "RBI DBIE", "World Bank", "GDELT", "IBJA Rates",
                 "Economic Times RSS", "Business Standard RSS",
             ],
+            data_quality=data_quality,
+            price_data_as_of=price_as_of,
         )
 
     except HTTPException:

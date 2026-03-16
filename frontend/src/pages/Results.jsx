@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, RefreshCw, Sparkles, TrendingUp, AlertCircle } from 'lucide-react'
+import { ArrowLeft, RefreshCw, Sparkles, TrendingUp, AlertCircle, Wifi, WifiOff } from 'lucide-react'
 import { useRecommendations } from '../hooks/useRecommendations'
 import ResultCard from '../components/ResultCard'
 import LoadingState from '../components/LoadingState'
@@ -49,7 +49,8 @@ export default function Results() {
 
   if (!data) return null
 
-  const { recommendations = [], macro_context, magic_allocation, duration_label, amount } = data
+  const { recommendations = [], macro_context, magic_allocation, duration_label, amount,
+          data_quality, price_data_as_of } = data
 
   // Build allocation map from magic mode
   const allocMap = magic_allocation
@@ -137,6 +138,37 @@ export default function Results() {
         </div>
       )}
 
+      {/* ── Data quality banner ──────────────────────────────────────────── */}
+      {data_quality === 'live' && (
+        <div className="flex items-center gap-2 text-xs text-green-700 bg-green-50 border border-green-100 rounded-xl px-4 py-2.5">
+          <Wifi size={13} className="flex-shrink-0" />
+          <span>
+            <strong>Live market data</strong>
+            {price_data_as_of ? ` · Prices as of ${price_data_as_of}` : ''}
+            {' · ETF prices via AMFI / NSE'}
+          </span>
+        </div>
+      )}
+      {data_quality === 'partial' && (
+        <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-4 py-2.5">
+          <Wifi size={13} className="flex-shrink-0" />
+          <span>
+            <strong>Partial live data</strong>
+            {price_data_as_of ? ` · Most prices as of ${price_data_as_of}` : ''}
+            {' · Some prices are estimated (Est. badge)'}
+          </span>
+        </div>
+      )}
+      {data_quality === 'mock' && (
+        <div className="flex items-center gap-2 text-xs text-orange-700 bg-orange-50 border border-orange-200 rounded-xl px-4 py-2.5">
+          <WifiOff size={13} className="flex-shrink-0" />
+          <span>
+            <strong>Estimated prices</strong>
+            {' · Live feed temporarily unavailable · Scores use approximate Mar 2026 values · Refresh to retry'}
+          </span>
+        </div>
+      )}
+
       {/* ── Result cards ─────────────────────────────────────────────────── */}
       <div className="space-y-4">
         {recommendations.map((product, i) => (
@@ -154,7 +186,11 @@ export default function Results() {
       {data.data_sources?.length > 0 && (
         <div className="text-center text-xs text-slate-400 space-y-1">
           <div>Data sources: {data.data_sources.join(' · ')}</div>
-          <div>Last updated: {new Date(data.analysis_timestamp).toLocaleTimeString('en-IN')}</div>
+          <div>
+            Analysis at: {new Date(data.analysis_timestamp).toLocaleTimeString('en-IN')}
+            {price_data_as_of ? ` · Prices as of: ${price_data_as_of}` : ''}
+            {' · FD rates as of 15-Mar-2026'}
+          </div>
           <div className="mt-2 text-slate-300">
             ⚠ Not SEBI-registered advice. For informational purposes only.
           </div>

@@ -63,3 +63,5 @@ class RecommendResponse(BaseModel):
     duration_label: str
     amount: float
     data_sources: List[str] = []
+    data_quality: str = "unknown"       # "live" | "partial" | "mock"
+    price_data_as_of: Optional[str] = None   # ISO date or label

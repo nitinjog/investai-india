@@ -22,6 +22,14 @@ export default function ResultCard({ product, rank, allocation, magicMode }) {
     ? `${product.current_yield.toFixed(2)}% dist. yield`
     : null
 
+  const priceSource = product.extra?.price_source || 'unknown'
+  const isLive = priceSource === 'live_yfinance' || priceSource === 'live_mfapi'
+  const priceLabel = product.category === 'fd'
+    ? null   // FD rates are always static — label shown at page level
+    : isLive
+      ? { text: 'Live', cls: 'text-green-600 bg-green-50 border-green-100' }
+      : { text: 'Est.', cls: 'text-amber-600 bg-amber-50 border-amber-100' }
+
   return (
     <div className={clsx(
       'card animate-slide-up border transition-all duration-200',
@@ -67,7 +75,12 @@ export default function ResultCard({ product, rank, allocation, magicMode }) {
 
       {/* ── Key metrics strip ───────────────────────────────────────────── */}
       <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Metric label="Rate / Price" value={priceOrRate} highlight />
+        <Metric
+          label="Rate / Price"
+          value={priceOrRate}
+          highlight
+          badge={priceLabel}
+        />
         {yieldStr && <Metric label="Yield" value={yieldStr} />}
         <Metric label="1Y Return" value={formatPct(product.returns?.y1)} color={product.returns?.y1 >= 0 ? 'green' : 'red'} />
         <Metric label="Confidence" value={`${product.confidence}%`} />
@@ -190,10 +203,20 @@ export default function ResultCard({ product, rank, allocation, magicMode }) {
   )
 }
 
-function Metric({ label, value, highlight, color }) {
+function Metric({ label, value, highlight, color, badge }) {
   return (
     <div className="bg-slate-50 rounded-lg px-3 py-2">
-      <div className="text-xs text-slate-400">{label}</div>
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs text-slate-400">{label}</span>
+        {badge && (
+          <span className={clsx(
+            'text-[10px] font-semibold px-1 py-0.5 rounded border leading-none',
+            badge.cls
+          )}>
+            {badge.text}
+          </span>
+        )}
+      </div>
       <div className={clsx(
         'text-sm font-bold mt-0.5',
         highlight  ? 'text-saffron' :

@@ -36,16 +36,16 @@ def fetch_rbi_data() -> Dict:
         return cached
 
     result = {
-        "repo_rate": 6.50,
+        "repo_rate": 6.25,         # RBI cut 25bps in Feb 2026 MPC meeting
         "reverse_repo": 3.35,
         "crr": 4.00,
         "slr": 18.00,
-        "bank_rate": 6.75,
-        "cpi_latest": 5.22,        # % YoY (as of Jan 2026)
-        "wpi_latest": 2.37,        # % YoY
-        "forex_reserves_bn": 634.0, # USD Billion
-        "rate_trend": "easing",    # easing | tightening | neutral
-        "rate_direction_score": 65, # 0-100; >50 = rate cut expected (equity bullish)
+        "bank_rate": 6.50,
+        "cpi_latest": 4.95,        # % YoY (as of Feb 2026, declining trend)
+        "wpi_latest": 2.10,        # % YoY
+        "forex_reserves_bn": 622.0, # USD Billion (as of Mar 2026)
+        "rate_trend": "easing",    # RBI in easing cycle since Feb 2026
+        "rate_direction_score": 72, # 0-100; >50 = rate cut expected (equity bullish)
         "source": "RBI DBIE / static fallback",
     }
 
