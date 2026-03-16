@@ -99,10 +99,11 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Disclaimer ──────────────────────────────────────────────────── */}
-      <div className="text-center text-xs text-slate-400 border-t border-slate-100 pt-8">
-        ⚠️ For informational purposes only. Not SEBI-registered investment advice. Please consult a financial advisor before investing.
-        Data sourced from NSE, AMFI, RBI DBIE, IBJA, GDELT. Prices refreshed every 15 minutes.
+      {/* ── Disclaimer + Developer credit ───────────────────────────────── */}
+      <div className="text-center text-xs text-slate-400 border-t border-slate-100 pt-8 pb-4 space-y-2">
+        <p>⚠️ For informational purposes only. Not SEBI-registered investment advice. Please consult a financial advisor before investing.
+        Data sourced from NSE, AMFI, RBI DBIE, IBJA, GDELT. Prices refreshed every 15 minutes.</p>
+        <p>developed by &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nitin Nandrajog</p>
       </div>
     </main>
   )
